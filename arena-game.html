@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Arena Game Matematika — SIPINTAR</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --navy-primer: #1A3A5C; --biru-sekunder: #2E6DAD; --kuning-aksen: #F5A623;
+      --hijau-sukses: #27AE7A; --putih-bersih: #F7F9FC; --text-dark: #2D3748;
+      --text-body: #4A5568; --text-light: #718096; --border-color: #E2E8F0;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.08); --shadow-md: 0 4px 12px rgba(0,0,0,0.1);
+      --shadow-lg: 0 10px 30px rgba(0,0,0,0.12);
+      --radius-sm: 8px; --radius-md: 12px; --radius-lg: 16px;
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Inter', sans-serif; color: var(--text-body); background: var(--putih-bersih); line-height: 1.6; overflow-x: hidden; }
+    h1, h2, h3, h4 { font-family: 'Poppins', sans-serif; font-weight: 600; color: var(--navy-primer); }
+    a { text-decoration: none; color: var(--biru-sekunder); transition: var(--transition); }
+    a:hover { color: var(--navy-primer); }
+
+    /* Buttons */
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 24px; border-radius: var(--radius-sm); font-family: 'Poppins', sans-serif; font-weight: 500; font-size: 14px; cursor: pointer; border: none; transition: var(--transition); }
+    .btn-primary { background: var(--navy-primer); color: white; }
+    .btn-primary:hover { background: var(--biru-sekunder); transform: translateY(-2px); box-shadow: var(--shadow-md); }
+    .btn-secondary { background: var(--biru-sekunder); color: white; }
+    .btn-secondary:hover { background: var(--navy-primer); transform: translateY(-2px); }
+    .btn-cta { background: var(--kuning-aksen); color: #1A1500; font-weight: 600; }
+    .btn-cta:hover { background: #E09513; transform: translateY(-2px); box-shadow: 0 4px 15px rgba(245,166,35,0.4); }
+    .btn-outline-navy { background: transparent; border: 2px solid var(--navy-primer); color: var(--navy-primer); }
+    .btn-outline-navy:hover { background: var(--navy-primer); color: white; }
+    .btn-sm { padding: 8px 16px; font-size: 13px; }
+
+    /* Navbar */
+    .navbar { position: sticky; top: 0; z-index: 1000; background: white; box-shadow: var(--shadow-sm); padding: 0 24px; }
+    .navbar-inner { max-width: 1200px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; height: 64px; }
+    .logo { display: flex; align-items: center; gap: 10px; }
+    .logo-icon { width: 36px; height: 36px; }
+    .logo-text { font-family: 'Poppins', sans-serif; font-weight: 700; font-size: 20px; color: var(--navy-primer); }
+    .logo-sub { font-size: 10px; color: var(--text-light); font-weight: 400; display: block; margin-top: -4px; }
+    .nav-links { display: flex; gap: 32px; list-style: none; }
+    .nav-links a { color: var(--text-body); font-weight: 500; font-size: 14px; position: relative; }
+    .nav-links a:hover, .nav-links a.active { color: var(--navy-primer); }
+    .nav-links a.active::after { content: ''; position: absolute; bottom: -20px; left: 0; right: 0; height: 2px; background: var(--kuning-aksen); }
+    .nav-buttons { display: flex; gap: 12px; }
+
+    /* Badges */
+    .badge { display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 500; }
+    .badge-kuning { background: rgba(245,166,35,0.15); color: #B7791F; }
+    .badge-biru { background: rgba(46,109,173,0.15); color: var(--biru-sekunder); }
+    .badge-hijau { background: rgba(39,174,122,0.15); color: #1E7A58; }
+    .badge-abu { background: #EDF2F7; color: var(--text-light); }
+    .badge-merah { background: rgba(229,62,62,0.15); color: #C53030; }
+
+    /* Arena Header */
+    .game-arena-header { background: var(--navy-primer); padding: 40px 0; text-align: center; color: white; }
+    .game-arena-header h1 { color: white; font-size: 32px; margin-bottom: 8px; }
+    .game-arena-header p { color: rgba(255,255,255,0.8); margin-bottom: 12px; }
+    .game-xp-badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(245,166,35,0.2); padding: 6px 16px; border-radius: 20px; font-size: 14px; color: var(--kuning-aksen); font-weight: 600; }
+
+    /* Section & Grid */
+    .section { padding: 40px 0; }
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+    .game-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; }
+
+    /* Game Cards */
+    .game-card { background: white; border-radius: var(--radius-lg); padding: 28px; border: 1px solid var(--border-color); transition: var(--transition); position: relative; overflow: hidden; }
+    .game-card:hover { transform: translateY(-6px); box-shadow: var(--shadow-lg); }
+    .game-card-badge { position: absolute; top: 16px; right: 16px; }
+    .game-card-icon { width: 56px; height: 56px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 26px; margin-bottom: 16px; }
+    .game-card h3 { font-size: 18px; margin-bottom: 8px; }
+    .game-card p { font-size: 14px; color: var(--text-light); margin-bottom: 20px; }
+    .game-card-sprint { border-top: 4px solid var(--kuning-aksen); }
+    .game-card-duel { border-top: 4px solid var(--biru-sekunder); }
+    .game-card-peta { border-top: 4px solid var(--hijau-sukses); }
+    .game-card-puzzle { border-top: 4px solid #9F7AEA; }
+    .game-card-board { border-top: 4px solid #ED8936; }
+    .game-card-daily { border-top: 4px solid #E53E3E; }
+
+    /* Sprint Game Section */
+    .sprint-game-section { background: white; border-radius: var(--radius-lg); padding: 40px; margin-top: 40px; border: 2px solid var(--border-color); text-align: center; }
+
+    /* Sprint Modal */
+    .sprint-game-modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); z-index: 2000; align-items: center; justify-content: center; padding: 20px; }
+    .sprint-game-modal.active { display: flex; }
+    .sprint-game-box { background: white; border-radius: var(--radius-lg); padding: 40px; max-width: 550px; width: 100%; text-align: center; box-shadow: var(--shadow-lg); animation: fadeInUp 0.3s ease; }
+    .sprint-timer-bar { width: 100%; height: 8px; background: #E2E8F0; border-radius: 4px; margin-bottom: 24px; overflow: hidden; }
+    .sprint-timer-fill { height: 100%; background: linear-gradient(90deg, var(--hijau-sukses), var(--kuning-aksen), #E53E3E); border-radius: 4px; transition: width 1s linear; }
+    .sprint-question-box { background: var(--putih-bersih); border-radius: var(--radius-md); padding: 30px; margin-bottom: 24px; min-height: 80px; display: flex; align-items: center; justify-content: center; }
+    .sprint-question-text { font-family: 'Poppins', sans-serif; font-size: 36px; font-weight: 700; color: var(--navy-primer); }
+    .sprint-input-answer { width: 200px; padding: 16px; font-size: 24px; text-align: center; border: 2px solid var(--border-color); border-radius: var(--radius-md); font-family: 'Poppins', sans-serif; font-weight: 600; color: var(--navy-primer); margin-bottom: 16px; }
+    .sprint-input-answer:focus { border-color: var(--biru-sekunder); outline: none; }
+    .sprint-btn-answer { padding: 14px 40px; font-size: 16px; }
+    .sprint-feedback-msg { font-size: 20px; font-weight: 600; min-height: 30px; margin: 12px 0; }
+    .sprint-feedback-msg.correct { color: var(--hijau-sukses); }
+    .sprint-feedback-msg.wrong { color: #E53E3E; }
+    .sprint-result-box h2 { font-size: 28px; margin-bottom: 8px; }
+    .sprint-result-box .big-score { font-family: 'Poppins', sans-serif; font-size: 64px; font-weight: 700; color: var(--kuning-aksen); margin: 16px 0; }
+    .sprint-result-box .xp-earned { font-size: 20px; color: var(--hijau-sukses); font-weight: 600; margin-bottom: 8px; }
+    .sprint-result-box .badge-earned { display: inline-block; background: rgba(245,166,35,0.15); color: #B7791F; padding: 8px 20px; border-radius: 20px; font-weight: 600; margin-bottom: 20px; }
+
+    /* Footer */
+    .footer { background: var(--navy-primer); padding: 40px 0 20px; color: white; }
+    .footer-inner { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+    .footer-top { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 40px; margin-bottom: 30px; }
+    .footer-links h4 { color: white; font-size: 14px; margin-bottom: 16px; }
+    .footer-links ul { list-style: none; }
+    .footer-links li { margin-bottom: 10px; }
+    .footer-links a { color: rgba(255,255,255,0.7); font-size: 14px; }
+    .footer-links a:hover { color: white; }
+    .footer-bottom { border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px; text-align: center; color: rgba(255,255,255,0.5); font-size: 13px; }
+
+    @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+    @media (max-width: 768px) { .game-grid { grid-template-columns: 1fr; } .nav-links { display: none; } }
+  </style>
+</head>
+<body>
+
+  <!-- ==================== NAVBAR ==================== -->
+  <nav class="navbar">
+    <div class="navbar-inner">
+      <a href="index.html" class="logo">
+        <svg class="logo-icon" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M20 2L24.5 14.5H37.5L27 22.5L31.5 35L20 27L8.5 35L13 22.5L2.5 14.5H15.5L20 2Z" fill="#F5A623"/>
+          <circle cx="20" cy="38" r="3" fill="#2E6DAD"/>
+        </svg>
+        <div>
+          <span class="logo-text">SIPINTAR</span>
+          <span class="logo-sub">Platform Matematika</span>
+        </div>
+      </a>
+      <ul class="nav-links">
+        <li><a href="index.html">Beranda</a></li>
+        <li><a href="materi.html">Materi</a></li>
+        <li><a href="arena-game.html" class="active">Game</a></li>
+        <li><a href="dashboard-siswa.html">Progres</a></li>
+      </ul>
+      <div class="nav-buttons">
+        <a href="dashboard-siswa.html" class="btn btn-primary btn-sm">Dashboard</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ==================== HEADER ARENA ==================== -->
+  <section class="game-arena-header">
+    <div class="container">
+      <h1>🎮 Arena Game Matematika</h1>
+      <p>Pilih tantangan dan buktikan kemampuanmu!</p>
+      <div class="game-xp-badge">
+        <span>⭐</span>
+        <span>2.450 XP | Level 5 — Aljabar Master</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== GRID GAME ==================== -->
+  <section class="section">
+    <div class="container">
+      <div class="game-grid">
+        <!-- Game 1 -->
+        <div class="game-card game-card-sprint">
+          <span class="badge badge-kuning game-card-badge">Populer</span>
+          <div class="game-card-icon" style="background: rgba(245,166,35,0.1); color: var(--kuning-aksen);">⏱️</div>
+          <h3>Sprint Soal</h3>
+          <p>Jawab sebanyak mungkin soal dalam 60 detik. Uji kecepatan dan ketepatanmu!</p>
+          <button class="btn btn-cta" onclick="startSprintGame()">▶ Mainkan</button>
+        </div>
+
+        <!-- Game 2 -->
+        <div class="game-card game-card-duel">
+          <span class="badge badge-biru game-card-badge">Multiplayer</span>
+          <div class="game-card-icon" style="background: rgba(46,109,173,0.1); color: var(--biru-sekunder);">⚔️</div>
+          <h3>Duel Matematika</h3>
+          <p>Tantang teman sekelas dalam pertandingan 1v1 real-time. Siapa yang lebih cepat?</p>
+          <button class="btn btn-secondary" onclick="alert('Fitur Duel sedang dalam pengembangan!')">Cari Lawan</button>
+        </div>
+
+        <!-- Game 3 -->
+        <div class="game-card game-card-peta">
+          <span class="badge badge-hijau game-card-badge">Story Mode</span>
+          <div class="game-card-icon" style="background: rgba(39,174,122,0.1); color: var(--hijau-sukses);">🗺️</div>
+          <h3>Peta Petualangan</h3>
+          <p>Jelajahi topik matematika dan taklukkan setiap wilayah. Kumpulkan semua badge!</p>
+          <button class="btn btn-primary" onclick="alert('Lanjutkan petualanganmu!')">Lanjutkan</button>
+        </div>
+
+        <!-- Game 4 -->
+        <div class="game-card game-card-puzzle">
+          <span class="badge badge-abu game-card-badge">Puzzle</span>
+          <div class="game-card-icon" style="background: rgba(159,122,234,0.1); color: #9F7AEA;">🧩</div>
+          <h3>Puzzle Angka</h3>
+          <p>Susun angka dan operasi matematika yang tepat untuk menyelesaikan teka-teki.</p>
+          <button class="btn btn-primary" onclick="alert('Puzzle Angka segera hadir!')">Mainkan</button>
+        </div>
+
+        <!-- Game 5 -->
+        <div class="game-card game-card-board">
+          <span class="badge badge-biru game-card-badge">Multiplayer</span>
+          <div class="game-card-icon" style="background: rgba(237,137,54,0.1); color: #ED8936;">🎲</div>
+          <h3>Board Game Digital</h3>
+          <p>Jawab soal untuk maju di papan permainan bersama teman. Siapa yang sampai finish?</p>
+          <button class="btn btn-primary" onclick="alert('Buat ruangan multiplayer!')">Buat Ruangan</button>
+        </div>
+
+        <!-- Game 6 -->
+        <div class="game-card game-card-daily">
+          <span class="badge badge-merah game-card-badge">🔥 Bonus 2x XP</span>
+          <div class="game-card-icon" style="background: rgba(229,62,62,0.1); color: #E53E3E;">📅</div>
+          <h3>Tantangan Harian</h3>
+          <p>Tantangan baru setiap hari dengan bonus XP 2x! Jangan sampai ketinggalan.</p>
+          <button class="btn btn-cta" onclick="alert('Tantangan hari ini: Selesaikan 15 soal Aljabar!')">Ikuti Sekarang</button>
+        </div>
+      </div>
+
+      <!-- ==================== MINI GAME SPRINT ==================== -->
+      <div class="sprint-game-section">
+        <h2 style="margin-bottom: 8px;">⚡ Sprint Soal — Mini Game</h2>
+        <p style="color: var(--text-light); margin-bottom: 24px;">Coba sekarang! Jawab sebanyak mungkin soal dalam 60 detik.</p>
+        <button class="btn btn-cta" style="font-size: 18px; padding: 16px 48px;" onclick="startSprintGame()">
+          ▶ Coba Sprint Soal Sekarang
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== SPRINT GAME MODAL ==================== -->
+  <div class="sprint-game-modal" id="sprintModal">
+    <div class="sprint-game-box" id="sprintBox">
+      <!-- Start Screen -->
+      <div id="sprintStart">
+        <h2 style="font-size: 28px; margin-bottom: 12px;">⚡ Sprint Soal</h2>
+        <p style="color: var(--text-light); margin-bottom: 24px;">Jawab sebanyak mungkin soal matematika dalam <strong>60 detik</strong>!</p>
+        <div style="display: flex; justify-content: center; gap: 24px; margin-bottom: 24px;">
+          <div style="text-align: center;">
+            <div style="font-size: 32px; font-weight: 700; color: var(--navy-primer);">+10</div>
+            <div style="font-size: 13px; color: var(--text-light);">per benar</div>
+          </div>
+          <div style="text-align: center;">
+            <div style="font-size: 32px; font-weight: 700; color: #E53E3E;">0</div>
+            <div style="font-size: 13px; color: var(--text-light);">per salah</div>
+          </div>
+        </div>
+        <button class="btn btn-cta sprint-btn-answer" onclick="beginSprint()">▶ Mulai Game</button>
+      </div>
+
+      <!-- Game Screen -->
+      <div id="sprintGame" style="display: none;">
+        <div class="sprint-timer-bar">
+          <div class="sprint-timer-fill" id="timerBar" style="width: 100%;"></div>
+        </div>
+        <div style="display: flex; justify-content: space-between; margin-bottom: 16px;">
+          <span style="font-size: 14px; color: var(--text-light);">Soal ke-<span id="questionNum">1</span></span>
+          <span style="font-size: 14px; color: var(--text-light);">Skor: <strong id="currentScore" style="color: var(--navy-primer);">0</strong></span>
+        </div>
+        <div class="sprint-question-box">
+          <div class="sprint-question-text" id="questionText">Siap?</div>
+        </div>
+        <div class="sprint-feedback-msg" id="feedbackMsg"></div>
+        <input type="number" class="sprint-input-answer" id="answerInput" placeholder="?" autocomplete="off">
+        <br>
+        <button class="btn btn-primary sprint-btn-answer" onclick="submitAnswer()">Jawab</button>
+        <p style="font-size: 12px; color: var(--text-light); margin-top: 12px;">Tekan Enter untuk menjawab</p>
+      </div>
+
+      <!-- Result Screen -->
+      <div id="sprintResult" style="display: none;">
+        <div class="sprint-result-box">
+          <h2>🎉 Selesai!</h2>
+          <div class="big-score" id="finalScore">0</div>
+          <div class="xp-earned" id="xpEarned">+0 XP</div>
+          <div class="badge-earned" id="badgeEarned" style="display: none;">🏆 Sprint Master</div>
+          <p style="color: var(--text-light); margin-bottom: 20px;" id="resultMessage">Kerja bagus!</p>
+          <div style="display: flex; gap: 12px; justify-content: center;">
+            <button class="btn btn-cta" onclick="beginSprint()">▶ Main Lagi</button>
+            <button class="btn btn-outline btn-outline-navy" onclick="closeSprint()">Tutup</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== FOOTER ==================== -->
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-top">
+        <div class="footer-brand">
+          <a href="index.html" class="logo" style="color: white;">
+            <svg class="logo-icon" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M20 2L24.5 14.5H37.5L27 22.5L31.5 35L20 27L8.5 35L13 22.5L2.5 14.5H15.5L20 2Z" fill="#F5A623"/>
+              <circle cx="20" cy="38" r="3" fill="#2E6DAD"/>
+            </svg>
+            <div>
+              <span class="logo-text" style="color: white;">SIPINTAR</span>
+            </div>
+          </a>
+        </div>
+        <div class="footer-links">
+          <h4>Menu</h4>
+          <ul>
+            <li><a href="index.html">Beranda</a></li>
+            <li><a href="materi.html">Materi</a></li>
+            <li><a href="arena-game.html">Game</a></li>
+          </ul>
+        </div>
+        <div class="footer-links">
+          <h4>Akun</h4>
+          <ul>
+            <li><a href="dashboard-siswa.html">Siswa</a></li>
+            <li><a href="dashboard-guru.html">Guru</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>© 2025 SIPINTAR. Platform Matematika Indonesia.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ==================== JAVASCRIPT SPRINT GAME ==================== -->
+  <script>
+    // ==================== DATA SOAL (30 soal) ====================
+    const soalDatabase = [
+      { q: "5 + 7 = ?", a: 12 },
+      { q: "15 - 8 = ?", a: 7 },
+      { q: "6 × 4 = ?", a: 24 },
+      { q: "36 ÷ 6 = ?", a: 6 },
+      { q: "9 + 14 = ?", a: 23 },
+      { q: "50 - 23 = ?", a: 27 },
+      { q: "7 × 8 = ?", a: 56 },
+      { q: "81 ÷ 9 = ?", a: 9 },
+      { q: "12 + 19 = ?", a: 31 },
+      { q: "100 - 37 = ?", a: 63 },
+      { q: "8 × 7 = ?", a: 56 },
+      { q: "64 ÷ 8 = ?", a: 8 },
+      { q: "23 + 17 = ?", a: 40 },
+      { q: "45 - 18 = ?", a: 27 },
+      { q: "9 × 6 = ?", a: 54 },
+      { q: "72 ÷ 9 = ?", a: 8 },
+      { q: "x + 5 = 12, x = ?", a: 7 },
+      { q: "3x = 21, x = ?", a: 7 },
+      { q: "x - 8 = 15, x = ?", a: 23 },
+      { q: "2x + 4 = 14, x = ?", a: 5 },
+      { q: "x ÷ 3 = 6, x = ?", a: 18 },
+      { q: "5x - 3 = 22, x = ?", a: 5 },
+      { q: "x + 12 = 30, x = ?", a: 18 },
+      { q: "4x = 32, x = ?", a: 8 },
+      { q: "x - 7 = 9, x = ?", a: 16 },
+      { q: "3x + 6 = 24, x = ?", a: 6 },
+      { q: "x ÷ 5 = 4, x = ?", a: 20 },
+      { q: "2x - 5 = 11, x = ?", a: 8 },
+      { q: "x + 9 = 25, x = ?", a: 16 },
+      { q: "6x = 42, x = ?", a: 7 },
+    ];
+
+    // ==================== GAME STATE ====================
+    let gameState = {
+      score: 0, timeLeft: 60, timerInterval: null,
+      currentQuestion: null, questionCount: 0,
+      correctCount: 0, wrongCount: 0, isPlaying: false
+    };
+
+    // ==================== FUNCTIONS ====================
+    function startSprintGame() {
+      document.getElementById('sprintModal').classList.add('active');
+      document.getElementById('sprintStart').style.display = 'block';
+      document.getElementById('sprintGame').style.display = 'none';
+      document.getElementById('sprintResult').style.display = 'none';
+    }
+
+    function closeSprint() {
+      document.getElementById('sprintModal').classList.remove('active');
+      stopTimer();
+    }
+
+    function beginSprint() {
+      gameState = { score: 0, timeLeft: 60, timerInterval: null, currentQuestion: null, questionCount: 0, correctCount: 0, wrongCount: 0, isPlaying: true };
+      document.getElementById('sprintStart').style.display = 'none';
+      document.getElementById('sprintGame').style.display = 'block';
+      document.getElementById('sprintResult').style.display = 'none';
+      document.getElementById('currentScore').textContent = '0';
+      document.getElementById('feedbackMsg').textContent = '';
+      document.getElementById('feedbackMsg').className = 'sprint-feedback-msg';
+      document.getElementById('answerInput').value = '';
+      document.getElementById('answerInput').focus();
+      nextQuestion();
+      startTimer();
+    }
+
+    function startTimer() {
+      const timerBar = document.getElementById('timerBar');
+      timerBar.style.width = '100%';
+      gameState.timerInterval = setInterval(() => {
+        gameState.timeLeft--;
+        timerBar.style.width = ((gameState.timeLeft / 60) * 100) + '%';
+        if (gameState.timeLeft <= 0) endGame();
+      }, 1000);
+    }
+
+    function stopTimer() {
+      if (gameState.timerInterval) { clearInterval(gameState.timerInterval); gameState.timerInterval = null; }
+    }
+
+    function nextQuestion() {
+      const randomIndex = Math.floor(Math.random() * soalDatabase.length);
+      gameState.currentQuestion = soalDatabase[randomIndex];
+      gameState.questionCount++;
+      document.getElementById('questionText').textContent = gameState.currentQuestion.q;
+      document.getElementById('questionNum').textContent = gameState.questionCount;
+      document.getElementById('answerInput').value = '';
+      document.getElementById('answerInput').focus();
+      document.getElementById('feedbackMsg').textContent = '';
+      document.getElementById('feedbackMsg').className = 'sprint-feedback-msg';
+    }
+
+    function submitAnswer() {
+      if (!gameState.isPlaying) return;
+      const input = document.getElementById('answerInput');
+      const userAnswer = parseInt(input.value);
+      const feedback = document.getElementById('feedbackMsg');
+      if (isNaN(userAnswer)) { feedback.textContent = 'Masukkan jawaban!'; feedback.className = 'sprint-feedback-msg wrong'; return; }
+      if (userAnswer === gameState.currentQuestion.a) {
+        gameState.score += 10; gameState.correctCount++;
+        feedback.textContent = 'Benar! ✓'; feedback.className = 'sprint-feedback-msg correct';
+      } else {
+        gameState.wrongCount++;
+        feedback.textContent = 'Salah ✗ Jawaban: ' + gameState.currentQuestion.a;
+        feedback.className = 'sprint-feedback-msg wrong';
+      }
+      document.getElementById('currentScore').textContent = gameState.score;
+      localStorage.setItem('sprintLastScore', gameState.score);
+      setTimeout(() => { if (gameState.isPlaying) nextQuestion(); }, 800);
+    }
+
+    function endGame() {
+      stopTimer(); gameState.isPlaying = false;
+      document.getElementById('sprintGame').style.display = 'none';
+      document.getElementById('sprintResult').style.display = 'block';
+      const finalScore = gameState.score;
+      const xp = finalScore;
+      document.getElementById('finalScore').textContent = finalScore;
+      document.getElementById('xpEarned').textContent = '+' + xp + ' XP';
+      const badgeEl = document.getElementById('badgeEarned');
+      const msgEl = document.getElementById('resultMessage');
+      if (finalScore >= 80) { badgeEl.textContent = '🏆 Sprint Legend'; badgeEl.style.display = 'inline-block'; msgEl.textContent = 'Luar biasa! Kamu adalah legenda sprint!'; }
+      else if (finalScore >= 50) { badgeEl.textContent = '⭐ Sprint Expert'; badgeEl.style.display = 'inline-block'; msgEl.textContent = 'Hebat! Pertahankan performamu!'; }
+      else if (finalScore >= 20) { badgeEl.textContent = '🥉 Sprint Starter'; badgeEl.style.display = 'inline-block'; msgEl.textContent = 'Bagus! Terus berlatih untuk hasil lebih baik.'; }
+      else { badgeEl.style.display = 'none'; msgEl.textContent = 'Jangan menyerah! Coba lagi dan tingkatkan skormu.'; }
+      const highScore = parseInt(localStorage.getItem('sprintHighScore') || '0');
+      if (finalScore > highScore) { localStorage.setItem('sprintHighScore', finalScore); msgEl.textContent += ' (High Score Baru!)'; }
+    }
+
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' && gameState.isPlaying) submitAnswer();
+      if (e.key === 'Escape') closeSprint();
+    });
+    document.getElementById('sprintModal').addEventListener('click', function(e) { if (e.target === this) closeSprint(); });
+  </script>
+</body>
+</html>

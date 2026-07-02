@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard Siswa — SIPINTAR</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --navy-primer: #1A3A5C; --biru-sekunder: #2E6DAD; --kuning-aksen: #F5A623;
+      --hijau-sukses: #27AE7A; --putih-bersih: #F7F9FC; --text-dark: #2D3748;
+      --text-body: #4A5568; --text-light: #718096; --border-color: #E2E8F0;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.08); --shadow-md: 0 4px 12px rgba(0,0,0,0.1);
+      --radius-sm: 8px; --radius-md: 12px; --radius-lg: 16px;
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Inter', sans-serif; color: var(--text-body); background: var(--putih-bersih); line-height: 1.6; }
+    h1, h2, h3, h4 { font-family: 'Poppins', sans-serif; font-weight: 600; color: var(--navy-primer); }
+    a { text-decoration: none; color: var(--biru-sekunder); }
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 24px; border-radius: var(--radius-sm); font-family: 'Poppins', sans-serif; font-weight: 500; font-size: 14px; cursor: pointer; border: none; transition: var(--transition); }
+    .btn-primary { background: var(--navy-primer); color: white; }
+    .btn-primary:hover { background: var(--biru-sekunder); transform: translateY(-2px); }
+    .btn-sm { padding: 8px 16px; font-size: 13px; }
+    .progress-bar { width: 100%; height: 8px; background: #E2E8F0; border-radius: 4px; overflow: hidden; }
+    .progress-fill { height: 100%; border-radius: 4px; transition: width 0.5s ease; }
+    .badge { display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 500; }
+    .badge-kuning { background: rgba(245,166,35,0.15); color: #B7791F; }
+    .badge-biru { background: rgba(46,109,173,0.15); color: var(--biru-sekunder); }
+    .badge-hijau { background: rgba(39,174,122,0.15); color: #1E7A58; }
+
+    /* Layout */
+    .dashboard-layout { display: flex; min-height: 100vh; }
+    .sidebar { width: 260px; background: var(--navy-primer); color: white; padding: 24px 0; position: fixed; height: 100vh; overflow-y: auto; z-index: 100; }
+    .sidebar-profile { padding: 0 20px 24px; border-bottom: 1px solid rgba(255,255,255,0.1); text-align: center; }
+    .sidebar-avatar { width: 64px; height: 64px; border-radius: 50%; background: var(--kuning-aksen); display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 700; color: var(--navy-primer); margin: 0 auto 12px; }
+    .sidebar-name { font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 15px; margin-bottom: 2px; }
+    .sidebar-class { font-size: 13px; color: rgba(255,255,255,0.7); margin-bottom: 12px; }
+    .sidebar-xp { margin-top: 12px; }
+    .sidebar-xp-label { display: flex; justify-content: space-between; font-size: 11px; color: rgba(255,255,255,0.7); margin-bottom: 6px; }
+    .sidebar-menu { list-style: none; padding: 16px 0; }
+    .sidebar-menu li a { display: flex; align-items: center; gap: 12px; padding: 12px 20px; color: rgba(255,255,255,0.8); font-size: 14px; transition: var(--transition); }
+    .sidebar-menu li a:hover, .sidebar-menu li a.active { background: rgba(255,255,255,0.1); color: white; border-left: 3px solid var(--kuning-aksen); }
+    .sidebar-menu li a.active { background: rgba(255,255,255,0.15); }
+    .main-content { flex: 1; margin-left: 260px; padding: 24px; background: var(--putih-bersih); min-height: 100vh; }
+
+    /* Navbar */
+    .navbar { position: relative; margin: -24px -24px 24px -24px; width: calc(100% + 48px); background: white; box-shadow: var(--shadow-sm); padding: 0 24px; }
+    .navbar-inner { max-width: 1200px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; height: 64px; }
+    .logo { display: flex; align-items: center; gap: 10px; }
+    .logo-icon { width: 36px; height: 36px; }
+    .logo-text { font-family: 'Poppins', sans-serif; font-weight: 700; font-size: 20px; color: var(--navy-primer); }
+    .nav-links { display: flex; gap: 32px; list-style: none; }
+    .nav-links a { color: var(--text-body); font-weight: 500; font-size: 14px; }
+    .nav-links a:hover { color: var(--navy-primer); }
+    .nav-buttons { display: flex; gap: 12px; align-items: center; }
+
+    /* Dashboard */
+    .dashboard-header { margin-bottom: 24px; }
+    .dashboard-header h1 { font-size: 24px; }
+    .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+    .stat-card { background: white; border-radius: var(--radius-md); padding: 20px; box-shadow: var(--shadow-sm); border: 1px solid var(--border-color); }
+    .stat-card-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; margin-bottom: 12px; }
+    .stat-card-value { font-family: 'Poppins', sans-serif; font-size: 22px; font-weight: 700; margin-bottom: 4px; }
+    .stat-card-label { font-size: 13px; color: var(--text-light); }
+    .content-panel { background: white; border-radius: var(--radius-md); padding: 24px; margin-bottom: 24px; box-shadow: var(--shadow-sm); border: 1px solid var(--border-color); }
+    .content-panel h2 { font-size: 18px; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+
+    /* Video Cards */
+    .video-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+    .video-card { background: white; border-radius: var(--radius-md); overflow: hidden; box-shadow: var(--shadow-sm); border: 1px solid var(--border-color); transition: var(--transition); }
+    .video-card:hover { box-shadow: var(--shadow-md); transform: translateY(-4px); }
+    .video-thumbnail { width: 100%; height: 160px; background: linear-gradient(135deg, #EBF8FF, #BEE3F8); display: flex; align-items: center; justify-content: center; font-size: 36px; position: relative; }
+    .video-duration { position: absolute; bottom: 8px; right: 8px; background: rgba(0,0,0,0.7); color: white; padding: 2px 8px; border-radius: 4px; font-size: 12px; }
+    .video-info { padding: 16px; }
+    .video-info h4 { font-size: 15px; margin-bottom: 8px; }
+    .video-meta { display: flex; align-items: center; justify-content: space-between; margin-top: 12px; }
+
+    /* Mission Cards */
+    .mission-card { display: flex; align-items: center; gap: 16px; padding: 20px; background: white; border-radius: var(--radius-md); border: 1px solid var(--border-color); margin-bottom: 16px; transition: var(--transition); }
+    .mission-card:hover { box-shadow: var(--shadow-md); }
+    .mission-icon { width: 56px; height: 56px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0; }
+    .mission-info { flex: 1; }
+    .mission-info h4 { font-size: 15px; margin-bottom: 4px; }
+    .mission-info p { font-size: 13px; color: var(--text-light); margin-bottom: 8px; }
+    .mission-reward { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--kuning-aksen); font-weight: 600; }
+
+    /* Adventure Map */
+    .adventure-map { display: flex; align-items: center; justify-content: space-between; padding: 30px 20px; background: linear-gradient(135deg, #1A3A5C, #2E6DAD); border-radius: var(--radius-lg); position: relative; overflow: hidden; }
+    .map-island { display: flex; flex-direction: column; align-items: center; gap: 8px; position: relative; z-index: 1; }
+    .map-island-icon { width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; border: 3px solid; }
+    .map-island.completed .map-island-icon { background: var(--hijau-sukses); border-color: var(--hijau-sukses); color: white; }
+    .map-island.active .map-island-icon { background: var(--kuning-aksen); border-color: var(--kuning-aksen); color: var(--navy-primer); animation: pulse 2s infinite; }
+    .map-island.locked .map-island-icon { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.3); color: rgba(255,255,255,0.5); }
+    .map-island-label { font-size: 12px; color: rgba(255,255,255,0.9); font-weight: 500; }
+    .map-connector { flex: 1; height: 3px; background: rgba(255,255,255,0.2); margin: 0 8px; position: relative; top: -14px; }
+    .map-connector.completed { background: var(--hijau-sukses); }
+    @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
+
+    /* Leaderboard */
+    .leaderboard-table { width: 100%; border-collapse: collapse; }
+    .leaderboard-table th { text-align: left; padding: 12px 16px; font-size: 12px; color: var(--text-light); font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid var(--border-color); }
+    .leaderboard-table td { padding: 14px 16px; font-size: 14px; border-bottom: 1px solid var(--border-color); }
+    .leaderboard-table tr:last-child td { border-bottom: none; }
+    .leaderboard-table tr.current-user { background: rgba(245,166,35,0.08); border-left: 3px solid var(--kuning-aksen); }
+    .leaderboard-rank { font-family: 'Poppins', sans-serif; font-weight: 700; font-size: 16px; color: var(--navy-primer); width: 40px; }
+    .leaderboard-avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--biru-sekunder); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 12px; }
+    .leaderboard-name { font-weight: 500; color: var(--text-dark); }
+    .leaderboard-xp { font-weight: 600; color: var(--kuning-aksen); }
+
+    @media (max-width: 1024px) { .sidebar { width: 220px; } .main-content { margin-left: 220px; } }
+    @media (max-width: 768px) {
+      .stats-row, .video-grid { grid-template-columns: 1fr; }
+      .sidebar { transform: translateX(-100%); }
+      .main-content { margin-left: 0; }
+      .adventure-map { flex-direction: column; gap: 20px; }
+      .map-connector { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="dashboard-layout">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sidebar-profile">
+        <div class="sidebar-avatar">BS</div>
+        <div class="sidebar-name">Budi Santoso</div>
+        <div class="sidebar-class">Kelas 9A</div>
+        <div class="badge badge-kuning" style="font-size: 11px;">⭐ Level 5 — Aljabar Master</div>
+        <div class="sidebar-xp">
+          <div class="sidebar-xp-label"><span>XP</span><span>2.450 / 3.000</span></div>
+          <div class="progress-bar"><div class="progress-fill" style="width: 82%; background: var(--kuning-aksen);"></div></div>
+        </div>
+      </div>
+      <ul class="sidebar-menu">
+        <li><a href="dashboard-siswa.html" class="active">📊 Dashboard</a></li>
+        <li><a href="materi.html">🎥 Materi Video</a></li>
+        <li><a href="arena-game.html">🎮 Arena Game</a></li>
+        <li><a href="#">🎯 Misi Aktif</a></li>
+        <li><a href="#">🏆 Leaderboard</a></li>
+        <li><a href="#">👤 Profil</a></li>
+      </ul>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+      <nav class="navbar">
+        <div class="navbar-inner">
+          <a href="index.html" class="logo">
+            <svg class="logo-icon" viewBox="0 0 40 40" fill="none"><path d="M20 2L24.5 14.5H37.5L27 22.5L31.5 35L20 27L8.5 35L13 22.5L2.5 14.5H15.5L20 2Z" fill="#F5A623"/><circle cx="20" cy="38" r="3" fill="#2E6DAD"/></svg>
+            <div><span class="logo-text">SIPINTAR</span></div>
+          </a>
+          <ul class="nav-links">
+            <li><a href="index.html">Beranda</a></li>
+            <li><a href="materi.html">Materi</a></li>
+            <li><a href="arena-game.html">Game</a></li>
+            <li><a href="#">Progres</a></li>
+          </ul>
+          <div class="nav-buttons">
+            <span style="font-size: 14px; color: var(--text-dark); font-weight: 500;">Budi Santoso</span>
+            <div class="sidebar-avatar" style="width: 36px; height: 36px; font-size: 14px; cursor: pointer;">BS</div>
+          </div>
+        </div>
+      </nav>
+
+      <div class="dashboard-header">
+        <h1>Selamat Datang, Budi! 👋</h1>
+        <p style="color: var(--text-light); font-size: 14px;">Lanjutkan perjalanan belajarmu hari ini.</p>
+      </div>
+
+      <!-- Stats Row -->
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="stat-card-icon" style="background: rgba(245,166,35,0.1); color: var(--kuning-aksen);">⚡</div>
+          <div class="stat-card-value" style="color: var(--kuning-aksen);">+120 XP</div>
+          <div class="stat-card-label">XP Hari Ini</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-icon" style="background: rgba(46,109,173,0.1); color: var(--biru-sekunder);">🎯</div>
+          <div class="stat-card-value" style="color: var(--biru-sekunder);">3/5</div>
+          <div class="stat-card-label">Misi Selesai</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-icon" style="background: rgba(229,62,62,0.1); color: #E53E3E;">🔥</div>
+          <div class="stat-card-value" style="color: #E53E3E;">7 Hari</div>
+          <div class="stat-card-label">Streak Belajar</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-icon" style="background: rgba(39,174,122,0.1); color: var(--hijau-sukses);">🏆</div>
+          <div class="stat-card-value" style="color: var(--hijau-sukses);">#4</div>
+          <div class="stat-card-label">Peringkat Kelas</div>
+        </div>
+      </div>
+
+      <!-- Materi Pra-kelas -->
+      <div class="content-panel">
+        <h2>📚 Materi Pra-kelas Hari Ini</h2>
+        <p style="color: var(--text-light); font-size: 14px; margin-bottom: 20px;">Tonton dulu sebelum kelas besok</p>
+        <div class="video-grid">
+          <div class="video-card">
+            <div class="video-thumbnail">📐<span class="video-duration">12 menit</span></div>
+            <div class="video-info">
+              <span class="badge badge-biru" style="margin-bottom: 8px; display: inline-block;">Aljabar</span>
+              <h4>Persamaan Linear Satu Variabel</h4>
+              <div class="video-meta"><span style="font-size: 13px; color: var(--text-light);">⏱️ 12 menit</span><a href="#" class="btn btn-primary btn-sm">Tonton</a></div>
+            </div>
+          </div>
+          <div class="video-card">
+            <div class="video-thumbnail" style="background: linear-gradient(135deg, #F0FFF4, #C6F6D5);">🔢<span class="video-duration">8 menit</span></div>
+            <div class="video-info">
+              <span class="badge badge-hijau" style="margin-bottom: 8px; display: inline-block;">Aljabar</span>
+              <h4>Substitusi Persamaan</h4>
+              <div class="video-meta"><span style="font-size: 13px; color: var(--text-light);">⏱️ 8 menit</span><a href="#" class="btn btn-primary btn-sm">Tonton</a></div>
+            </div>
+          </div>
+          <div class="video-card">
+            <div class="video-thumbnail" style="background: linear-gradient(135deg, #FFFAF0, #FEEBC8);">✏️<span class="video-duration">15 menit</span></div>
+            <div class="video-info">
+              <span class="badge badge-kuning" style="margin-bottom: 8px; display: inline-block;">Latihan</span>
+              <h4>Latihan Mandiri — Aljabar</h4>
+              <div class="video-meta"><span style="font-size: 13px; color: var(--text-light);">⏱️ 15 menit</span><a href="#" class="btn btn-primary btn-sm">Tonton</a></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Misi Game -->
+      <div class="content-panel">
+        <h2>🎯 Misi yang Harus Diselesaikan</h2>
+        <div class="mission-card">
+          <div class="mission-icon" style="background: rgba(245,166,35,0.1); color: var(--kuning-aksen);">⚔️</div>
+          <div class="mission-info">
+            <h4>Arena Aljabar — Level 3</h4>
+            <p>Selesaikan 10 soal aljabar dengan benar</p>
+            <div class="progress-bar" style="max-width: 300px;"><div class="progress-fill" style="width: 60%; background: var(--kuning-aksen);"></div></div>
+          </div>
+          <div class="mission-reward">+150 XP</div>
+          <a href="arena-game.html" class="btn btn-primary btn-sm">Lanjutkan</a>
+        </div>
+        <div class="mission-card">
+          <div class="mission-icon" style="background: rgba(46,109,173,0.1); color: var(--biru-sekunder);">⏱️</div>
+          <div class="mission-info">
+            <h4>Sprint 60 Detik — Geometri</h4>
+            <p>Jawab sebanyak mungkin soal geometri dalam 60 detik</p>
+            <div class="progress-bar" style="max-width: 300px;"><div class="progress-fill" style="width: 30%; background: var(--kuning-aksen);"></div></div>
+          </div>
+          <div class="mission-reward">+80 XP</div>
+          <a href="arena-game.html" class="btn btn-primary btn-sm">Lanjutkan</a>
+        </div>
+      </div>
+
+      <!-- Peta Petualangan -->
+      <div class="content-panel">
+        <h2>🗺️ Peta Petualangan</h2>
+        <div class="adventure-map">
+          <div class="map-island completed"><div class="map-island-icon">✓</div><span class="map-island-label">Bilangan</span></div>
+          <div class="map-connector completed"></div>
+          <div class="map-island active"><div class="map-island-icon">📐</div><span class="map-island-label">Aljabar</span></div>
+          <div class="map-connector"></div>
+          <div class="map-island locked"><div class="map-island-icon">🔒</div><span class="map-island-label">Geometri</span></div>
+          <div class="map-connector"></div>
+          <div class="map-island locked"><div class="map-island-icon">🔒</div><span class="map-island-label">Statistik</span></div>
+          <div class="map-connector"></div>
+          <div class="map-island locked"><div class="map-island-icon">🔒</div><span class="map-island-label">Trigonometri</span></div>
+        </div>
+      </div>
+
+      <!-- Leaderboard -->
+      <div class="content-panel">
+        <h2>🏆 Leaderboard Kelas 9A</h2>
+        <table class="leaderboard-table">
+          <thead><tr><th>Peringkat</th><th>Siswa</th><th>XP</th></tr></thead>
+          <tbody>
+            <tr><td class="leaderboard-rank">🥇 1</td><td><div style="display:flex;align-items:center;gap:10px;"><div class="leaderboard-avatar" style="background:var(--kuning-aksen);color:var(--navy-primer);">DR</div><span class="leaderboard-name">Dewi Rahmawati</span></div></td><td class="leaderboard-xp">3.240 XP</td></tr>
+            <tr><td class="leaderboard-rank">🥈 2</td><td><div style="display:flex;align-items:center;gap:10px;"><div class="leaderboard-avatar" style="background:#A0AEC0;">AP</div><span class="leaderboard-name">Andi Pratama</span></div></td><td class="leaderboard-xp">2.980 XP</td></tr>
+            <tr><td class="leaderboard-rank">🥉 3</td><td><div style="display:flex;align-items:center;gap:10px;"><div class="leaderboard-avatar" style="background:var(--hijau-sukses);">SF</div><span class="leaderboard-name">Siti Fatimah</span></div></td><td class="leaderboard-xp">2.760 XP</td></tr>
+            <tr class="current-user"><td class="leaderboard-rank">4</td><td><div style="display:flex;align-items:center;gap:10px;"><div class="leaderboard-avatar" style="background:var(--kuning-aksen);color:var(--navy-primer);">BS</div><span class="leaderboard-name">Budi Santoso (Kamu)</span></div></td><td class="leaderboard-xp">2.450 XP</td></tr>
+            <tr><td class="leaderboard-rank">5</td><td><div style="display:flex;align-items:center;gap:10px;"><div class="leaderboard-avatar" style="background:var(--biru-sekunder);">RW</div><span class="leaderboard-name">Rina Wulandari</span></div></td><td class="leaderboard-xp">2.180 XP</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

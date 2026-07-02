@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Perpustakaan Materi — SIPINTAR</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --navy-primer: #1A3A5C; --biru-sekunder: #2E6DAD; --kuning-aksen: #F5A623;
+      --hijau-sukses: #27AE7A; --putih-bersih: #F7F9FC; --text-dark: #2D3748;
+      --text-body: #4A5568; --text-light: #718096; --border-color: #E2E8F0;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.08); --shadow-md: 0 4px 12px rgba(0,0,0,0.1);
+      --radius-sm: 8px; --radius-md: 12px; --radius-lg: 16px;
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Inter', sans-serif; color: var(--text-body); background: var(--putih-bersih); line-height: 1.6; overflow-x: hidden; }
+    h1, h2, h3, h4 { font-family: 'Poppins', sans-serif; font-weight: 600; color: var(--navy-primer); }
+    a { text-decoration: none; color: var(--biru-sekunder); transition: var(--transition); }
+    a:hover { color: var(--navy-primer); }
+
+    /* Buttons */
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 24px; border-radius: var(--radius-sm); font-family: 'Poppins', sans-serif; font-weight: 500; font-size: 14px; cursor: pointer; border: none; transition: var(--transition); }
+    .btn-primary { background: var(--navy-primer); color: white; }
+    .btn-primary:hover { background: var(--biru-sekunder); transform: translateY(-2px); box-shadow: var(--shadow-md); }
+    .btn-sm { padding: 8px 16px; font-size: 13px; }
+
+    /* Navbar */
+    .navbar { position: sticky; top: 0; z-index: 1000; background: white; box-shadow: var(--shadow-sm); padding: 0 24px; }
+    .navbar-inner { max-width: 1200px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; height: 64px; }
+    .logo { display: flex; align-items: center; gap: 10px; }
+    .logo-icon { width: 36px; height: 36px; }
+    .logo-text { font-family: 'Poppins', sans-serif; font-weight: 700; font-size: 20px; color: var(--navy-primer); }
+    .logo-sub { font-size: 10px; color: var(--text-light); font-weight: 400; display: block; margin-top: -4px; }
+    .nav-links { display: flex; gap: 32px; list-style: none; }
+    .nav-links a { color: var(--text-body); font-weight: 500; font-size: 14px; position: relative; }
+    .nav-links a:hover, .nav-links a.active { color: var(--navy-primer); }
+    .nav-links a.active::after { content: ''; position: absolute; bottom: -20px; left: 0; right: 0; height: 2px; background: var(--kuning-aksen); }
+    .nav-buttons { display: flex; gap: 12px; }
+
+    /* Badges */
+    .badge { display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 500; }
+    .badge-biru { background: rgba(46,109,173,0.15); color: var(--biru-sekunder); }
+    .badge-hijau { background: rgba(39,174,122,0.15); color: #1E7A58; }
+    .badge-kuning { background: rgba(245,166,35,0.15); color: #B7791F; }
+    .badge-merah { background: rgba(229,62,62,0.15); color: #C53030; }
+    .badge-abu { background: #EDF2F7; color: var(--text-light); }
+
+    /* Materi Header */
+    .materi-header { background: var(--navy-primer); padding: 40px 0; }
+    .materi-search { max-width: 600px; margin: 0 auto 24px; position: relative; }
+    .materi-search input { padding: 14px 20px 14px 48px; font-size: 16px; border-radius: var(--radius-lg); border: none; box-shadow: var(--shadow-md); width: 100%; }
+    .materi-search input:focus { outline: none; }
+    .materi-search-icon { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--text-light); font-size: 18px; }
+    .materi-filters { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; }
+    .materi-filter-btn { padding: 8px 20px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.3); background: transparent; color: white; font-size: 14px; cursor: pointer; transition: var(--transition); font-family: 'Inter', sans-serif; }
+    .materi-filter-btn:hover, .materi-filter-btn.active { background: var(--kuning-aksen); border-color: var(--kuning-aksen); color: var(--navy-primer); font-weight: 600; }
+
+    /* Section */
+    .section { padding: 40px 0; }
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+
+    /* Materi Grid */
+    .materi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; padding: 40px 0; }
+    .materi-card { background: white; border-radius: var(--radius-md); overflow: hidden; box-shadow: var(--shadow-sm); border: 1px solid var(--border-color); transition: var(--transition); }
+    .materi-card:hover { box-shadow: var(--shadow-md); transform: translateY(-4px); }
+    .materi-thumbnail { width: 100%; height: 160px; display: flex; align-items: center; justify-content: center; font-size: 40px; position: relative; }
+    .materi-thumbnail.aljabar { background: linear-gradient(135deg, #EBF8FF, #BEE3F8); }
+    .materi-thumbnail.geometri { background: linear-gradient(135deg, #F0FFF4, #C6F6D5); }
+    .materi-thumbnail.statistik { background: linear-gradient(135deg, #FFFAF0, #FEEBC8); }
+    .materi-thumbnail.trigonometri { background: linear-gradient(135deg, #FAF5FF, #E9D8FD); }
+    .materi-thumbnail.bilangan { background: linear-gradient(135deg, #FFF5F5, #FED7D7); }
+    .materi-bookmark { position: absolute; top: 12px; right: 12px; background: white; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; border: none; box-shadow: var(--shadow-sm); font-size: 14px; transition: transform 0.2s; }
+    .materi-bookmark:hover { transform: scale(1.2); }
+    .materi-bookmark.bookmarked { color: var(--kuning-aksen); }
+    .materi-info { padding: 20px; }
+    .materi-info h4 { font-size: 15px; margin-bottom: 10px; }
+    .materi-meta { display: flex; align-items: center; justify-content: space-between; margin-top: 12px; }
+    .materi-duration { font-size: 13px; color: var(--text-light); }
+    .level-dasar { color: var(--hijau-sukses); }
+    .level-menengah { color: var(--kuning-aksen); }
+    .level-lanjutan { color: #E53E3E; }
+
+    /* Popular Section */
+    .popular-section { background: white; padding: 40px 0; margin-top: 20px; border-radius: var(--radius-md); }
+    .popular-card { display: flex; align-items: center; gap: 16px; padding: 16px 20px; background: var(--putih-bersih); border-radius: var(--radius-md); margin-bottom: 12px; transition: var(--transition); }
+    .popular-card:hover { box-shadow: var(--shadow-sm); }
+    .popular-rank { font-size: 24px; }
+    .popular-info h4 { font-size: 15px; margin-bottom: 4px; }
+    .popular-info p { font-size: 13px; color: var(--text-light); }
+    .popular-rating { margin-left: auto; color: var(--kuning-aksen); font-size: 14px; }
+
+    /* Footer */
+    .footer { background: var(--navy-primer); padding: 40px 0 20px; color: white; }
+    .footer-inner { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+    .footer-top { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 40px; margin-bottom: 30px; }
+    .footer-links h4 { color: white; font-size: 14px; margin-bottom: 16px; }
+    .footer-links ul { list-style: none; }
+    .footer-links li { margin-bottom: 10px; }
+    .footer-links a { color: rgba(255,255,255,0.7); font-size: 14px; }
+    .footer-links a:hover { color: white; }
+    .footer-bottom { border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px; text-align: center; color: rgba(255,255,255,0.5); font-size: 13px; }
+
+    @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+    @media (max-width: 768px) { .materi-grid { grid-template-columns: 1fr; } .nav-links { display: none; } }
+  </style>
+</head>
+<body>
+
+  <!-- ==================== NAVBAR ==================== -->
+  <nav class="navbar">
+    <div class="navbar-inner">
+      <a href="index.html" class="logo">
+        <svg class="logo-icon" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M20 2L24.5 14.5H37.5L27 22.5L31.5 35L20 27L8.5 35L13 22.5L2.5 14.5H15.5L20 2Z" fill="#F5A623"/>
+          <circle cx="20" cy="38" r="3" fill="#2E6DAD"/>
+        </svg>
+        <div>
+          <span class="logo-text">SIPINTAR</span>
+          <span class="logo-sub">Platform Matematika</span>
+        </div>
+      </a>
+      <ul class="nav-links">
+        <li><a href="index.html">Beranda</a></li>
+        <li><a href="materi.html" class="active">Materi</a></li>
+        <li><a href="arena-game.html">Game</a></li>
+        <li><a href="dashboard-siswa.html">Progres</a></li>
+      </ul>
+      <div class="nav-buttons">
+        <a href="dashboard-siswa.html" class="btn btn-primary btn-sm">Dashboard</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ==================== HEADER MATERI ==================== -->
+  <section class="materi-header">
+    <div class="container" style="text-align: center;">
+      <h1 style="color: white; font-size: 32px; margin-bottom: 8px;">📚 Perpustakaan Materi</h1>
+      <p style="color: rgba(255,255,255,0.8); margin-bottom: 24px;">Temukan materi matematika untuk setiap topik dan level</p>
+      <div class="materi-search">
+        <span class="materi-search-icon">🔍</span>
+        <input type="text" id="searchInput" placeholder="Cari materi matematika..." onkeyup="filterMateri()">
+      </div>
+      <div class="materi-filters">
+        <button class="materi-filter-btn active" onclick="filterByTopic('all', this)">Semua</button>
+        <button class="materi-filter-btn" onclick="filterByTopic('aljabar', this)">Aljabar</button>
+        <button class="materi-filter-btn" onclick="filterByTopic('geometri', this)">Geometri</button>
+        <button class="materi-filter-btn" onclick="filterByTopic('statistik', this)">Statistik</button>
+        <button class="materi-filter-btn" onclick="filterByTopic('trigonometri', this)">Trigonometri</button>
+        <button class="materi-filter-btn" onclick="filterByTopic('bilangan', this)">Bilangan</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== GRID MATERI ==================== -->
+  <section class="section">
+    <div class="container">
+      <div class="materi-grid" id="materiGrid">
+        <!-- Materi 1 -->
+        <div class="materi-card" data-topic="aljabar">
+          <div class="materi-thumbnail aljabar">📐<button class="materi-bookmark" onclick="toggleBookmark(this)">🔖</button></div>
+          <div class="materi-info">
+            <span class="badge badge-biru">Aljabar</span>
+            <h4>Persamaan Linear Satu Variabel</h4>
+            <div class="materi-meta"><span class="materi-duration">⏱️ 12 menit</span><span class="level-dasar" style="font-size: 13px; font-weight: 600;">● Dasar</span></div>
+            <a href="#" class="btn btn-primary btn-sm" style="width: 100%; margin-top: 12px;">Tonton Sekarang</a>
+          </div>
+        </div>
+
+        <!-- Materi 2 -->
+        <div class="materi-card" data-topic="aljabar">
+          <div class="materi-thumbnail aljabar">📊<button class="materi-bookmark" onclick="toggleBookmark(this)">🔖</button></div>
+          <div class="materi-info">
+            <span class="badge badge-biru">Aljabar</span>
+            <h4>Sistem Persamaan Linear</h4>
+            <div class="materi-meta"><span class="materi-duration">⏱️ 18 menit</span><span class="level-menengah" style="font-size: 13px; font-weight: 600;">● Menengah</span></div>
+            <a href="#" class="btn btn-primary btn-sm" style="width: 100%; margin-top: 12px;">Tonton Sekarang</a>
+          </div>
+        </div>
+
+        <!-- Materi 3 -->
+        <div class="materi-card" data-topic="geometri">
+          <div class="materi-thumbnail geometri">📏<button class="materi-bookmark" onclick="toggleBookmark(this)">🔖</button></div>
+          <div class="materi-info">
+            <span class="badge badge-hijau">Geometri</span>
+            <h4>Teorema Pythagoras</h4>
+            <div class="materi-meta"><span class="materi-duration">⏱️ 15 menit</span><span class="level-menengah" style="font-size: 13px; font-weight: 600;">● Menengah</span></div>
+            <a href="#" class="btn btn-primary btn-sm" style="width: 100%; margin-top: 12px;">Tonton Sekarang</a>
+          </div>
+        </div>
+
+        <!-- Materi 4 -->
+        <div class="materi-card" data-topic="geometri">
+          <div class="materi-thumbnail geometri">🔷<button class="materi-bookmark" onclick="toggleBookmark(this)">🔖</button></div>
+          <div class="materi-info">
+            <span class="badge badge-hijau">Geometri</span>
+            <h4>Luas dan Keliling Bangun Datar</h4>
+            <div class="materi-meta"><span class="materi-duration">⏱️ 10 menit</span><span class="level-dasar" style="font-size: 13px; font-weight: 600;">● Dasar</span></div>
+            <a href="#" class="btn btn-primary btn-sm" style="width: 100%; margin-top: 12px;">Tonton Sekarang</a>
+          </div>
+        </div>
+
+        <!-- Materi 5 -->
+        <div class="materi-card" data-topic="statistik">
+          <div class="materi-thumbnail statistik">📈<button class="materi-bookmark" onclick="toggleBookmark(this)">🔖</button></div>
+          <div class="materi-info">
+            <span class="badge badge-kuning">Statistik</span>
+            <h4>Statistika Dasar: Mean, Median, Modus</h4>
+            <div class="materi-meta"><span class="materi-duration">⏱️ 20 menit</span><span class="level-menengah" style="font-size: 13px; font-weight: 600;">● Menengah</span></div>
+            <a href="#" class="btn btn-primary btn-sm" style="width: 100%; margin-top: 12px;">Tonton Sekarang</a>
+          </div>
+        </div>
+
+        <!-- Materi 6 -->
+        <div class="materi-card" data-topic="aljabar">
+          <div class="materi-thumbnail aljabar">📉<button class="materi-bookmark" onclick="toggleBookmark(this)">🔖</button></div>
+          <div class="materi-info">
+            <span class="badge badge-biru">Aljabar</span>
+            <h4>Fungsi dan Grafik</h4>
+            <div class="materi-meta"><span class="materi-duration">⏱️ 22 menit</span><span class="level-lanjutan" style="font-size: 13px; font-weight: 600;">● Lanjutan</span></div>
+            <a href="#" class="btn btn-primary btn-sm" style="width: 100%; margin-top: 12px;">Tonton Sekarang</a>
+          </div>
+        </div>
+
+        <!-- Materi 7 -->
+        <div class="materi-card" data-topic="bilangan">
+          <div class="materi-thumbnail bilangan">🔢<button class="materi-bookmark" onclick="toggleBookmark(this)">🔖</button></div>
+          <div class="materi-info">
+            <span class="badge badge-merah">Bilangan</span>
+            <h4>Bilangan Bulat dan Operasinya</h4>
+            <div class="materi-meta"><span class="materi-duration">⏱️ 8 menit</span><span class="level-dasar" style="font-size: 13px; font-weight: 600;">● Dasar</span></div>
+            <a href="#" class="btn btn-primary btn-sm" style="width: 100%; margin-top: 12px;">Tonton Sekarang</a>
+          </div>
+        </div>
+
+        <!-- Materi 8 -->
+        <div class="materi-card" data-topic="trigonometri">
+          <div class="materi-thumbnail trigonometri">📐<button class="materi-bookmark" onclick="toggleBookmark(this)">🔖</button></div>
+          <div class="materi-info">
+            <span class="badge badge-abu" style="background: rgba(128,90,213,0.15); color: #805AD5;">Trigonometri</span>
+            <h4>Trigonometri Dasar</h4>
+            <div class="materi-meta"><span class="materi-duration">⏱️ 25 menit</span><span class="level-lanjutan" style="font-size: 13px; font-weight: 600;">● Lanjutan</span></div>
+            <a href="#" class="btn btn-primary btn-sm" style="width: 100%; margin-top: 12px;">Tonton Sekarang</a>
+          </div>
+        </div>
+
+        <!-- Materi 9 -->
+        <div class="materi-card" data-topic="statistik">
+          <div class="materi-thumbnail statistik">🎲<button class="materi-bookmark" onclick="toggleBookmark(this)">🔖</button></div>
+          <div class="materi-info">
+            <span class="badge badge-kuning">Statistik</span>
+            <h4>Peluang dan Kombinasi</h4>
+            <div class="materi-meta"><span class="materi-duration">⏱️ 16 menit</span><span class="level-menengah" style="font-size: 13px; font-weight: 600;">● Menengah</span></div>
+            <a href="#" class="btn btn-primary btn-sm" style="width: 100%; margin-top: 12px;">Tonton Sekarang</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================== MATERI TERPOPULER ==================== -->
+      <div class="popular-section">
+        <h2 style="font-size: 24px; margin-bottom: 24px; text-align: center;">🔥 Materi Terpopuler</h2>
+        <div class="popular-card">
+          <span class="popular-rank">🥇</span>
+          <div class="popular-info"><h4>Persamaan Linear Satu Variabel</h4><p>👁️ 12.450 penonton • ⭐ 4.9</p></div>
+          <div class="popular-rating">⭐⭐⭐⭐⭐</div>
+        </div>
+        <div class="popular-card">
+          <span class="popular-rank">🥈</span>
+          <div class="popular-info"><h4>Teorema Pythagoras</h4><p>👁️ 10.820 penonton • ⭐ 4.8</p></div>
+          <div class="popular-rating">⭐⭐⭐⭐⭐</div>
+        </div>
+        <div class="popular-card">
+          <span class="popular-rank">🥉</span>
+          <div class="popular-info"><h4>Statistika Dasar: Mean, Median, Modus</h4><p>👁️ 9.340 penonton • ⭐ 4.7</p></div>
+          <div class="popular-rating">⭐⭐⭐⭐⭐</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== FOOTER ==================== -->
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-top">
+        <div class="footer-brand">
+          <a href="index.html" class="logo" style="color: white;">
+            <svg class="logo-icon" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M20 2L24.5 14.5H37.5L27 22.5L31.5 35L20 27L8.5 35L13 22.5L2.5 14.5H15.5L20 2Z" fill="#F5A623"/>
+              <circle cx="20" cy="38" r="3" fill="#2E6DAD"/>
+            </svg>
+            <div><span class="logo-text" style="color: white;">SIPINTAR</span></div>
+          </a>
+        </div>
+        <div class="footer-links">
+          <h4>Menu</h4>
+          <ul><li><a href="index.html">Beranda</a></li><li><a href="materi.html">Materi</a></li><li><a href="arena-game.html">Game</a></li></ul>
+        </div>
+        <div class="footer-links">
+          <h4>Akun</h4>
+          <ul><li><a href="dashboard-siswa.html">Siswa</a></li><li><a href="dashboard-guru.html">Guru</a></li></ul>
+        </div>
+      </div>
+      <div class="footer-bottom"><p>© 2025 SIPINTAR. Platform Matematika Indonesia.</p></div>
+    </div>
+  </footer>
+
+  <script>
+    let currentFilter = 'all';
+    function filterByTopic(topic, btn) {
+      currentFilter = topic;
+      document.querySelectorAll('.materi-filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      applyFilters();
+    }
+    function filterMateri() { applyFilters(); }
+    function applyFilters() {
+      const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+      document.querySelectorAll('.materi-card').forEach(card => {
+        const topic = card.getAttribute('data-topic');
+        const title = card.querySelector('h4').textContent.toLowerCase();
+        const matchesTopic = currentFilter === 'all' || topic === currentFilter;
+        const matchesSearch = title.includes(searchTerm);
+        card.style.display = (matchesTopic && matchesSearch) ? 'block' : 'none';
+        if (matchesTopic && matchesSearch) card.style.animation = 'fadeInUp 0.4s ease';
+      });
+    }
+    function toggleBookmark(btn) {
+      btn.classList.toggle('bookmarked');
+      btn.textContent = btn.classList.contains('bookmarked') ? '📌' : '🔖';
+      btn.style.color = btn.classList.contains('bookmarked') ? 'var(--kuning-aksen)' : '';
+    }
+  </script>
+</body>
+</html>

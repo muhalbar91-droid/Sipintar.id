@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard Guru — SIPINTAR</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root {
+      --navy-primer: #1A3A5C; --biru-sekunder: #2E6DAD; --kuning-aksen: #F5A623;
+      --hijau-sukses: #27AE7A; --putih-bersih: #F7F9FC; --text-dark: #2D3748;
+      --text-body: #4A5568; --text-light: #718096; --border-color: #E2E8F0;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.08); --shadow-md: 0 4px 12px rgba(0,0,0,0.1);
+      --radius-sm: 8px; --radius-md: 12px; --radius-lg: 16px;
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Inter', sans-serif; color: var(--text-body); background: var(--putih-bersih); line-height: 1.6; }
+    h1, h2, h3, h4 { font-family: 'Poppins', sans-serif; font-weight: 600; color: var(--navy-primer); }
+    a { text-decoration: none; color: var(--biru-sekunder); }
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 24px; border-radius: var(--radius-sm); font-family: 'Poppins', sans-serif; font-weight: 500; font-size: 14px; cursor: pointer; border: none; transition: var(--transition); }
+    .btn-primary { background: var(--navy-primer); color: white; }
+    .btn-primary:hover { background: var(--biru-sekunder); transform: translateY(-2px); }
+    .btn-cta { background: var(--kuning-aksen); color: #1A1500; font-weight: 600; }
+    .btn-cta:hover { background: #E09513; transform: translateY(-2px); }
+    .btn-sm { padding: 8px 16px; font-size: 13px; }
+    .progress-bar { width: 100%; height: 8px; background: #E2E8F0; border-radius: 4px; overflow: hidden; }
+    .badge { display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 500; }
+    .badge-biru { background: rgba(46,109,173,0.15); color: var(--biru-sekunder); }
+    .badge-kuning { background: rgba(245,166,35,0.15); color: #B7791F; }
+
+    /* Layout */
+    .dashboard-layout { display: flex; min-height: 100vh; }
+    .sidebar { width: 260px; background: var(--navy-primer); color: white; padding: 24px 0; position: fixed; height: 100vh; overflow-y: auto; z-index: 100; }
+    .sidebar-profile { padding: 0 20px 24px; border-bottom: 1px solid rgba(255,255,255,0.1); text-align: center; }
+    .sidebar-avatar { width: 64px; height: 64px; border-radius: 50%; background: var(--biru-sekunder); display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 700; color: white; margin: 0 auto 12px; }
+    .sidebar-name { font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 15px; margin-bottom: 2px; }
+    .sidebar-class { font-size: 13px; color: rgba(255,255,255,0.7); margin-bottom: 12px; }
+    .sidebar-menu { list-style: none; padding: 16px 0; }
+    .sidebar-menu li a { display: flex; align-items: center; gap: 12px; padding: 12px 20px; color: rgba(255,255,255,0.8); font-size: 14px; transition: var(--transition); }
+    .sidebar-menu li a:hover, .sidebar-menu li a.active { background: rgba(255,255,255,0.1); color: white; border-left: 3px solid var(--kuning-aksen); }
+    .main-content { flex: 1; margin-left: 260px; padding: 24px; background: var(--putih-bersih); min-height: 100vh; }
+
+    /* Navbar */
+    .navbar { position: relative; margin: -24px -24px 24px -24px; width: calc(100% + 48px); background: white; box-shadow: var(--shadow-sm); padding: 0 24px; }
+    .navbar-inner { max-width: 1200px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; height: 64px; }
+    .logo { display: flex; align-items: center; gap: 10px; }
+    .logo-icon { width: 36px; height: 36px; }
+    .logo-text { font-family: 'Poppins', sans-serif; font-weight: 700; font-size: 20px; color: var(--navy-primer); }
+    .nav-links { display: flex; gap: 32px; list-style: none; }
+    .nav-links a { color: var(--text-body); font-weight: 500; font-size: 14px; }
+    .nav-links a:hover { color: var(--navy-primer); }
+    .nav-buttons { display: flex; gap: 12px; align-items: center; }
+
+    /* Dashboard */
+    .dashboard-header { margin-bottom: 24px; }
+    .dashboard-header h1 { font-size: 24px; }
+    .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+    .stat-card { background: white; border-radius: var(--radius-md); padding: 20px; box-shadow: var(--shadow-sm); border: 1px solid var(--border-color); }
+    .stat-card-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; margin-bottom: 12px; }
+    .stat-card-value { font-family: 'Poppins', sans-serif; font-size: 22px; font-weight: 700; margin-bottom: 4px; }
+    .stat-card-label { font-size: 13px; color: var(--text-light); }
+    .content-panel { background: white; border-radius: var(--radius-md); padding: 24px; margin-bottom: 24px; box-shadow: var(--shadow-sm); border: 1px solid var(--border-color); }
+    .content-panel h2 { font-size: 18px; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+
+    /* Forms */
+    .teacher-form-group { margin-bottom: 16px; }
+    .teacher-form-group label { display: block; font-size: 13px; font-weight: 500; color: var(--text-dark); margin-bottom: 6px; }
+    input, select, textarea { font-family: 'Inter', sans-serif; padding: 10px 14px; border: 1px solid var(--border-color); border-radius: var(--radius-sm); font-size: 14px; width: 100%; transition: var(--transition); background: white; }
+    input:focus, select:focus, textarea:focus { outline: none; border-color: var(--biru-sekunder); box-shadow: 0 0 0 3px rgba(46,109,173,0.1); }
+    textarea { resize: vertical; }
+
+    /* Table */
+    .teacher-table { width: 100%; border-collapse: collapse; }
+    .teacher-table th, .teacher-table td { padding: 12px 16px; text-align: left; font-size: 14px; border-bottom: 1px solid var(--border-color); }
+    .teacher-table th { font-weight: 600; color: var(--text-dark); background: var(--putih-bersih); }
+    .status-badge { display: inline-block; padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 500; }
+    .status-good { background: rgba(39,174,122,0.15); color: #1E7A58; }
+    .status-warning { background: rgba(245,166,35,0.15); color: #B7791F; }
+    .status-excellent { background: rgba(46,109,173,0.15); color: var(--biru-sekunder); }
+
+    /* Chart */
+    .chart-container { height: 280px; position: relative; }
+
+    @media (max-width: 1024px) { .sidebar { width: 220px; } .main-content { margin-left: 220px; } }
+    @media (max-width: 768px) {
+      .stats-row { grid-template-columns: repeat(2, 1fr); }
+      .sidebar { transform: translateX(-100%); }
+      .main-content { margin-left: 0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="dashboard-layout">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sidebar-profile">
+        <div class="sidebar-avatar">SR</div>
+        <div class="sidebar-name">Ibu Siti Rahayu</div>
+        <div class="sidebar-class">Guru Matematika</div>
+        <div class="badge badge-biru" style="font-size: 11px;">👩‍🏫 Guru Senior</div>
+      </div>
+      <ul class="sidebar-menu">
+        <li><a href="dashboard-guru.html" class="active">📊 Dashboard</a></li>
+        <li><a href="#">👥 Kelola Kelas</a></li>
+        <li><a href="#">📤 Upload Materi</a></li>
+        <li><a href="#">📝 Buat Soal Game</a></li>
+        <li><a href="#">📈 Analitik</a></li>
+        <li><a href="#">📢 Pengumuman</a></li>
+      </ul>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+      <nav class="navbar">
+        <div class="navbar-inner">
+          <a href="index.html" class="logo">
+            <svg class="logo-icon" viewBox="0 0 40 40" fill="none"><path d="M20 2L24.5 14.5H37.5L27 22.5L31.5 35L20 27L8.5 35L13 22.5L2.5 14.5H15.5L20 2Z" fill="#F5A623"/><circle cx="20" cy="38" r="3" fill="#2E6DAD"/></svg>
+            <div><span class="logo-text">SIPINTAR</span></div>
+          </a>
+          <ul class="nav-links">
+            <li><a href="index.html">Beranda</a></li>
+            <li><a href="materi.html">Materi</a></li>
+            <li><a href="arena-game.html">Game</a></li>
+            <li><a href="#">Kelas</a></li>
+          </ul>
+          <div class="nav-buttons">
+            <span style="font-size: 14px; color: var(--text-dark); font-weight: 500;">Ibu Siti Rahayu</span>
+            <div class="sidebar-avatar" style="width: 36px; height: 36px; font-size: 14px; background: var(--biru-sekunder); color: white; cursor: pointer;">SR</div>
+          </div>
+        </div>
+      </nav>
+
+      <div class="dashboard-header">
+        <h1>Selamat Datang, Ibu Siti! 👩‍🏫</h1>
+        <p style="color: var(--text-light); font-size: 14px;">Pantau progres kelas dan kelola materi pembelajaran.</p>
+      </div>
+
+      <!-- Stats -->
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="stat-card-icon" style="background: rgba(46,109,173,0.1); color: var(--biru-sekunder);">👥</div>
+          <div class="stat-card-value" style="color: var(--biru-sekunder);">32</div>
+          <div class="stat-card-label">Total Siswa</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-icon" style="background: rgba(245,166,35,0.1); color: var(--kuning-aksen);">🎥</div>
+          <div class="stat-card-value" style="color: var(--kuning-aksen);">24</div>
+          <div class="stat-card-label">Video Diunggah</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-icon" style="background: rgba(39,174,122,0.1); color: var(--hijau-sukses);">📊</div>
+          <div class="stat-card-value" style="color: var(--hijau-sukses);">78</div>
+          <div class="stat-card-label">Rata-rata Skor Kelas</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-icon" style="background: rgba(229,62,62,0.1); color: #E53E3E;">📝</div>
+          <div class="stat-card-value" style="color: #E53E3E;">3</div>
+          <div class="stat-card-label">Tugas Aktif</div>
+        </div>
+      </div>
+
+      <!-- Upload Materi & Buat Soal -->
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px;">
+        <div class="content-panel" style="margin-bottom: 0;">
+          <h2>📤 Tambah Materi Pra-kelas</h2>
+          <form>
+            <div class="teacher-form-group">
+              <label>Pilih Topik</label>
+              <select><option>Aljabar</option><option>Geometri</option><option>Statistik</option><option>Trigonometri</option><option>Bilangan</option></select>
+            </div>
+            <div class="teacher-form-group">
+              <label>Judul Materi</label>
+              <input type="text" placeholder="Contoh: Persamaan Linear Dua Variabel">
+            </div>
+            <div class="teacher-form-group">
+              <label>Upload Video</label>
+              <div style="border: 2px dashed var(--border-color); border-radius: var(--radius-sm); padding: 20px; text-align: center; color: var(--text-light); cursor: pointer; font-size: 14px;">📁 Klik untuk upload video atau drag & drop</div>
+            </div>
+            <div class="teacher-form-group">
+              <label>Deskripsi</label>
+              <textarea rows="3" placeholder="Deskripsikan materi ini..."></textarea>
+            </div>
+            <button type="button" class="btn btn-primary" style="width: 100%;" onclick="alert('Materi berhasil disimpan!')">Simpan Materi</button>
+          </form>
+        </div>
+
+        <div class="content-panel" style="margin-bottom: 0;">
+          <h2>📝 Buat Soal Game</h2>
+          <form>
+            <div class="teacher-form-group">
+              <label>Jenis Soal</label>
+              <select><option>Pilihan Ganda</option><option>Isian</option><option>Drag-Drop</option></select>
+            </div>
+            <div class="teacher-form-group">
+              <label>Pertanyaan</label>
+              <textarea rows="2" placeholder="Tulis pertanyaan matematika..."></textarea>
+            </div>
+            <div class="teacher-form-group">
+              <label>Opsi Jawaban</label>
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                <input type="text" placeholder="A. Jawaban 1">
+                <input type="text" placeholder="B. Jawaban 2">
+                <input type="text" placeholder="C. Jawaban 3">
+                <input type="text" placeholder="D. Jawaban 4">
+              </div>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+              <div class="teacher-form-group">
+                <label>Kunci Jawaban</label>
+                <select><option>A</option><option>B</option><option>C</option><option>D</option></select>
+              </div>
+              <div class="teacher-form-group">
+                <label>Poin XP</label>
+                <input type="number" value="10" min="5" max="100">
+              </div>
+            </div>
+            <button type="button" class="btn btn-cta" style="width: 100%;" onclick="alert('Soal berhasil ditambahkan ke game!')">Tambah ke Game</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Chart -->
+      <div class="content-panel">
+        <h2>📈 Skor Rata-rata per Topik</h2>
+        <div class="chart-container">
+          <canvas id="scoreChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Tabel Progres -->
+      <div class="content-panel">
+        <h2>👥 Progres Siswa Kelas 9A</h2>
+        <div style="overflow-x: auto;">
+          <table class="teacher-table">
+            <thead><tr><th>No</th><th>Nama Siswa</th><th>Video Ditonton</th><th>Skor Game</th><th>Topik Lemah</th><th>Status</th><th>Aksi</th></tr></thead>
+            <tbody>
+              <tr><td>1</td><td><strong>Dewi Rahmawati</strong></td><td>18/24</td><td><strong style="color: var(--hijau-sukses);">92</strong></td><td>-</td><td><span class="status-badge status-excellent">Luar Biasa</span></td><td><button class="btn btn-primary btn-sm" onclick="alert('Detail: Dewi Rahmawati')">Lihat Detail</button></td></tr>
+              <tr><td>2</td><td><strong>Andi Pratama</strong></td><td>16/24</td><td><strong style="color: var(--hijau-sukses);">85</strong></td><td>Trigonometri</td><td><span class="status-badge status-good">Baik</span></td><td><button class="btn btn-primary btn-sm" onclick="alert('Detail: Andi Pratama')">Lihat Detail</button></td></tr>
+              <tr><td>3</td><td><strong>Siti Fatimah</strong></td><td>15/24</td><td><strong style="color: var(--kuning-aksen);">78</strong></td><td>Geometri</td><td><span class="status-badge status-good">Baik</span></td><td><button class="btn btn-primary btn-sm" onclick="alert('Detail: Siti Fatimah')">Lihat Detail</button></td></tr>
+              <tr><td>4</td><td><strong>Budi Santoso</strong></td><td>14/24</td><td><strong style="color: var(--kuning-aksen);">76</strong></td><td>Statistik</td><td><span class="status-badge status-good">Baik</span></td><td><button class="btn btn-primary btn-sm" onclick="alert('Detail: Budi Santoso')">Lihat Detail</button></td></tr>
+              <tr><td>5</td><td><strong>Rina Wulandari</strong></td><td>10/24</td><td><strong style="color: #E53E3E;">62</strong></td><td>Aljabar, Geometri</td><td><span class="status-badge status-warning">Perlu Perhatian</span></td><td><button class="btn btn-primary btn-sm" onclick="alert('Detail: Rina Wulandari')">Lihat Detail</button></td></tr>
+              <tr><td>6</td><td><strong>Ahmad Dhani</strong></td><td>12/24</td><td><strong style="color: var(--kuning-aksen);">71</strong></td><td>Trigonometri</td><td><span class="status-badge status-good">Baik</span></td><td><button class="btn btn-primary btn-sm" onclick="alert('Detail: Ahmad Dhani')">Lihat Detail</button></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Pengumuman -->
+      <div class="content-panel">
+        <h2>📢 Kirim Pengumuman ke Siswa</h2>
+        <form>
+          <div class="teacher-form-group">
+            <label>Judul Pengumuman</label>
+            <input type="text" placeholder="Contoh: Ujian Tengah Semester">
+          </div>
+          <div class="teacher-form-group">
+            <label>Isi Pengumuman</label>
+            <textarea rows="4" placeholder="Tulis pengumuman untuk siswa..."></textarea>
+          </div>
+          <button type="button" class="btn btn-primary" onclick="alert('Pengumuman berhasil dikirim ke semua siswa!')">Kirim ke Semua Siswa</button>
+        </form>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    const ctx = document.getElementById('scoreChart').getContext('2d');
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: ['Bilangan', 'Aljabar', 'Geometri', 'Statistik', 'Trigonometri'],
+        datasets: [{
+          label: 'Skor Rata-rata Kelas',
+          data: [82, 78, 71, 75, 68],
+          backgroundColor: ['rgba(46,109,173,0.8)','rgba(245,166,35,0.8)','rgba(39,174,122,0.8)','rgba(229,62,62,0.8)','rgba(128,90,213,0.8)'],
+          borderRadius: 8, borderSkipped: false,
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: { y: { beginAtZero: true, max: 100, grid: { color: 'rgba(0,0,0,0.05)' } }, x: { grid: { display: false } } }
+      }
+    });
+  </script>
+</body>
+</html>
